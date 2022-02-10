@@ -1,29 +1,31 @@
-
+from flask import Flask
+import json
 import sqlite3
-import prettytable
-
-con = sqlite3.connect(":memory:")
-cur = con.cursor()
-sqlite_query = ("""
-        CREATE TABLE animals_new
-        (Id integer PRIMARY KEY AUTOINCREMENT,
-         AnimalType NVARCHAR(50),
-         Sex NVARCHAR(50),
-         Name NVARCHAR(100),
-         DateOfBirth date ,
-         Age integer ,
-         Weight decimal )
-            """)
 
 
-def print_result(sqlite_query):
-    cur.execute(sqlite_query)
-    result_query = ('SELECT * from animals')
-    table = cur.execute(result_query)
-    mytable = prettytable.from_db_cursor(table)
-    mytable.max_width = 30
-    print(mytable)
+app = Flask(__name__)
 
 
-if __name__ == '__main__':
-    print_result(sqlite_query)
+@app.get('/<itemid>')
+def search_id():
+    with sqlite3.connect("animal.db") as connection:
+        connection.row_factory = sqlite3.Row
+        result = connection.execute(
+            """
+        SELECT *
+        from animals
+        join animal_type at2
+        where id = {itemid}
+        """
+        ).fetchone()
+
+    result = dict(result)
+
+    return app.response_class(
+        json.dumps(result),
+        status=200,
+        mimetype="aplication/json"
+    )
+
+if __name__ == "__main__":
+    app.run(host="localhost", port=8080)
