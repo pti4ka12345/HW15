@@ -123,7 +123,9 @@ UPDATE breeds
 SET breed = 'abyssinian7'
 WHERE id = 'abyssinian';
 
+
+
 SELECT *
-from animals
-join animal_type at2
-where animal_id = 'A667848';
+from animals new
+inner join animal_outcome new2
+where id=5;

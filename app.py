@@ -7,16 +7,17 @@ app = Flask(__name__)
 
 
 @app.get('/<itemid>')
-def search_id():
+def search_id(itemid):
     with sqlite3.connect("animal.db") as connection:
         connection.row_factory = sqlite3.Row
         result = connection.execute(
-            """
-        SELECT *
-        from animals
-        join animal_type at2
-        where id = {itemid}
-        """
+            f'''
+              SELECT *
+              from animals new
+              inner join animal_outcome new2
+              where id={itemid};
+            '''
+
         ).fetchone()
 
     result = dict(result)
